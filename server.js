@@ -7,16 +7,30 @@ app.use(express.json());
 const DB = "db.json";
 
 function load(){
-  if(!fs.existsSync(DB)) return {};
-  return JSON.parse(fs.readFileSync(DB));
+  try {
+    if(!fs.existsSync(DB)) return {};
+    return JSON.parse(fs.readFileSync(DB));
+  } catch {
+    return {};
+  }
 }
 
 function save(data){
-  fs.writeFileSync(DB, JSON.stringify(data,null,2));
+  try {
+    fs.writeFileSync(DB, JSON.stringify(data,null,2));
+  } catch {}
 }
 
+app.get("/", (req,res)=>{
+  res.send("Servidor activo");
+});
+
 app.post("/crear",(req,res)=>{
-  const { key, dias } = req.body;
+  const { key, dias } = req.body || {};
+
+  if(!key){
+    return res.json({ ok:false });
+  }
 
   const db = load();
 
@@ -31,7 +45,7 @@ app.post("/crear",(req,res)=>{
 });
 
 app.post("/validar",(req,res)=>{
-  const { key } = req.body;
+  const { key } = req.body || {};
 
   const db = load();
 
@@ -54,4 +68,8 @@ app.post("/validar",(req,res)=>{
   });
 });
 
-app.listen(process.env.PORT || 3000);
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, ()=>{
+  console.log("Servidor corriendo en puerto " + PORT);
+});
