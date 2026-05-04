@@ -22,14 +22,14 @@ function save(data){
 }
 
 app.get("/", (req,res)=>{
-  res.send("Servidor activo");
+  res.status(200).send("OK");
 });
 
 app.post("/crear",(req,res)=>{
   const { key, dias } = req.body || {};
 
   if(!key){
-    return res.json({ ok:false });
+    return res.status(400).json({ ok:false });
   }
 
   const db = load();
